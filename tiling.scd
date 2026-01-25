@@ -13,15 +13,8 @@ o = Server.default.options;
 
 )
 
-~constantTone = true;
-
-// for CLEAT system ========================================================================
-// Execute the following lines to get access to the 24 output channels
-// for windows.  MAKE SURE MOTU rate is set to rate Windows is expecting (it could be 44.1!)
-// o.outDevice_("ASIO : MOTU Pro Audio");
+// for 4 channels ========================================================================
 /*(
-/*o.numOutputBusChannels_(24);*/  // CLEAT
-
 o.numOutputBusChannels_(4); // for Scarlett
 
 // Execute this line after changing number of channels
@@ -50,15 +43,13 @@ m = MIDIOut(0);
 
 //====================================================================================================
 // Read the files for tiling and computer frequencies on dual graph
-
 (
-// ~indices = CSVFileReader.readInterpret("/Users/abeaudoi/Dropbox/Projects/super_collider/Tiling/indices_3a.txt").postcs;
-// ~verts = CSVFileReader.readInterpret("/Users/abeaudoi/Dropbox/Projects/super_collider/Tiling/verts_3a.txt").postcs;
+// Set the file directory
+~dir = "/Users/abeaudoi/sw/git_repos/JI_tiling/Data/";
 
-
-~indices = CSVFileReader.readInterpret("/Users/abeaudoi/Dropbox/Projects/super_collider/Tiling/indices_5Dprojection.txt").postcs;
-~verts = CSVFileReader.readInterpret("/Users/abeaudoi/Dropbox/Projects/super_collider/Tiling/verts_5Dprojection.txt").postcs;
-~faces = CSVFileReader.readInterpret("/Users/abeaudoi/Dropbox/Projects/super_collider/Tiling/faces_5Dprojection.txt").postcs;
+~indices = CSVFileReader.readInterpret(~dir ++ "indices_5Dprojection.txt").postcs;
+~verts = CSVFileReader.readInterpret(~dir ++ "verts_5Dprojection.txt").postcs;
+~faces = CSVFileReader.readInterpret(~dir ++ "faces_5Dprojection.txt").postcs;
 
 ~lattice_limit = {
 	arg v;
@@ -149,9 +140,9 @@ in the button (used to select different lattice parameter choices).
 };
 
 ~latticeParameters = [
+	["3", "5", "7", "9", "11"],
 	["2", "3", "5", "7", "9"],
 	["2", "3", "5", "7", "11"],
-	["3", "5", "7", "9", "11"],
 	["3", "5", "7", "11", "13"],
 	["1", "2", "3", "5", "7"],
 	["2", "3", "/3", "5", "/5"],
@@ -323,7 +314,10 @@ SynthDef(\toneConstant, {
 	arg amp = 0.05, freq = 220, out = 0;
 	var snd;
 
-	snd = SinOsc.ar(freq);
+	// Create three harmonics (fundamental + 2 overtones)
+    snd = SinOsc.ar(freq, 0, amp * 0.5) +      // Fundamental
+          SinOsc.ar(freq * 2, 0, amp * 0.25) +  // 2nd harmonic
+          SinOsc.ar(freq * 3, 0, amp * 0.125);  // 3rd harmonic
 	Out.ar(out, amp*snd);
 }).add;
 
@@ -341,17 +335,15 @@ coef: mutedString);
 Out.ar(out, amp*snd);
 }).add;
 
-// Define the synth with three harmonics
+// Define the synth with harmonics
 SynthDef(\harmonicSynth, {
     arg out=0, freq = 440, amp = 0.3, attack = 0.1, sustain = 0.5, release = 1.5;
     var sig, env;
 
     // Create three harmonics (fundamental + 2 overtones)
     sig = SinOsc.ar(freq, 0, amp * 0.5) +      // Fundamental
-          SinOsc.ar(freq * 2, 0, amp * 0.125) +  // 2nd harmonic
-          SinOsc.ar(freq * 3, 0, amp * 0.075) +  // 3rd harmonic
-	      SinOsc.ar(freq / 2, 0, amp * 0.125) +  // 2nd subharmonic
-          SinOsc.ar(freq / 3, 0, amp * 0.075);   // 3rd subharmonic
+          SinOsc.ar(freq * 2, 0, amp * 0.25) +  // 2nd harmonic
+          SinOsc.ar(freq * 3, 0, amp * 0.125);  // 3rd harmonic
 
     // Envelope for smooth attack and release
     // env = EnvGen.kr(Env.asr(0.01, 1, 0.5), gate, doneAction: 2);
@@ -378,7 +370,7 @@ for (0,3,
 		arg i;
 		var ap, op;
 
-		if (o.numOutputBusChannels>2,{op=i;ap=0.1},{op=i%2;ap=0.05});
+		if (o.numOutputBusChannels>2,{op=i;ap=0.1},{op=i%2;ap=0.15});
 		if (~constantTone,
 			{
 				~toneArray[i] = Synth.new(\toneConstant, ["freq", ~baseFreq, "out", op, "amp", ap ]);
@@ -396,8 +388,7 @@ for (0,3,
 // vertex coordinates, it is necessary to re-read the file.
 
 (
-// ~ampRef = 1.0;  // for modular
-~ampRef = 0.25;   // for computer
+~ampRef = 0.8;
 
 w = Window.new("Penrose", Rect(600, 100, 600, 600)).front;
 w.view.background_(Color.white);
@@ -488,6 +479,7 @@ v.mouseDownAction_(
 					if (~inside_convex_polygon.value([x,y],vs),
 						{
 							s=i;
+							~indices[s].postln;
 							amps = ~ampScale.value(~verts[s],x,y);
 							amps.postln;
 							break.value(true)
@@ -507,7 +499,7 @@ v.mouseDownAction_(
 						var frq, id;
 
 						frq = ~freqScale.value(s,i);
-						// frq = ~singleOctave.value(frq);
+						frq = ~singleOctave.value(frq);
 						ratios[i] = frq;
 						notes[i] = noteNames[ round(12*log2(~singleOctave.value(frq))).asInteger ];
 						frq = ~baseFreq*frq;
@@ -550,8 +542,6 @@ v.mouseDownAction_(
 w.front;
 )
 
-
-~ampRef=0.25;
 
 // CLEAN UP
 (
