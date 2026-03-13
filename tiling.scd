@@ -244,7 +244,7 @@ in the button (used to select different lattice parameter choices).
 		break.value(true);
 	};
 };
-
+)
 /*
 Routine to develop relative amplitudes based on position selected within the tile.
 
@@ -265,6 +265,7 @@ So, a "Newton's method" is employed,requiring a single interation ("linear" syst
 Note that, as the tiles appear to be parallelograms, it may be possible to use an
 esplicit solution given in the link above -- for this specific case.
 */
+(
 ~ampScale = {
 	arg v, x, y;
 
