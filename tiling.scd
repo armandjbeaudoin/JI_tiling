@@ -18,10 +18,13 @@ There are several blocks to run in order:
 //====================================================================================================
 (
 ~baseFreq = 261.63;        // reference frequency for unity
+~ampRef = 0.9;             // reference amplification
+
 ~constantTone = true;     // constant tone, for use with vocoder
 ~vocoderMode = true;      // true = software vocoder (requires ~constantTone = true)
-~modulo2 = false;
-~oneOctave = false;
+
+~modulo2 = false;          // points along axis are taken as [...-1,0,-1,0,1,0,1,...]
+~oneOctave = false;        // restrict frequencies to a single octave
 )
 
 //====================================================================================================
@@ -280,6 +283,27 @@ esplicit solution given in the link above -- for this specific case.
 
 	[ ((1-s)*(1-t))/4, ((1+s)*(1-t))/4, ((1+s)*(1+t))/4, ((1-s)*(1+t))/4 ];
 };
+
+~playTile = { arg tile, amps;
+	if (amps.isNil) { amps = [0.25, 0.25, 0.25, 0.25] };
+
+	for(0, 3, { arg i;
+		var frq;
+		frq = ~freqScale.value(tile, i);
+		if (~oneOctave, { frq = ~singleOctave.value(frq) });
+		frq = ~baseFreq * frq;
+
+		if (~vocoderMode) {
+			~toneArray[i].set(\freq, frq);
+			~vocoderArray[i].set(\amp, sqrt(amps[i] * ~ampRef) * 0.15);
+		} {
+			if (~constantTone,
+				{ ~toneArray[i].set(\freq, frq, \amp, sqrt(amps[i]*~ampRef)); },
+				{ Synth(\triangle, ["freq", frq, "out", i%o.numOutputBusChannels, "amp", amps[i]*~ampRef]); }
+			);
+		};
+	});
+};
 )
 
 //====================================================================================================
@@ -464,24 +488,11 @@ SynthDef(\triangleConstant, {
 ~tileTones = OSCFunc(
 	{
 		arg msg, time, addr, recvPort;
-		var tile, amp=0.25;
+		var tile;
 
 		tile = msg[1].asInteger - 1;
 
-		for(0,3,
-			{
-				arg i;
-				var frq;
-
-				frq = ~freqScale.value(tile,i);
-				frq = ~baseFreq*frq;
-				if (~vocoderMode) {
-					~toneArray[i].set(\freq, frq);  // update carrier; amp unchanged (no click position)
-				} {
-					Synth(\triangle, ["freq", frq, "out", i%o.numOutputBusChannels, "amp", amp ] );
-				};
-			}
-		);
+		~playTile.value(tile, nil);
 	},
 	'/Tile');
 )
@@ -572,7 +583,7 @@ As it currently stands, the vertices are scaled to the window.  To recover the o
 vertex coordinates, it is necessary to re-read the file.
 */
 (
-~ampRef = 0.9;
+
 
 w = Window.new("Penrose", Rect(600, 100, 600, 600)).front;
 w.view.background_(Color.white);
@@ -676,32 +687,17 @@ v.mouseDownAction_(
 
 		if (s>(-1),
 			{
-				for(0,3,
-					{
-						arg i;
-						var frq, id;
+				// Build ratios/notes for display
+				for(0, 3, { arg i;
+					var frq;
+					frq = ~freqScale.value(s, i);
+					if (~oneOctave, { frq = ~singleOctave.value(frq) });
+					ratios[i] = frq;
+					notes[i] = noteNames[ round(12*log2(~singleOctave.value(frq))).asInteger ];
+				});
 
-						frq = ~freqScale.value(s,i);
-						if (~oneOctave, {frq = ~singleOctave.value(frq)});
-						ratios[i] = frq;
-						notes[i] = noteNames[ round(12*log2(~singleOctave.value(frq))).asInteger ];
-						frq = ~baseFreq*frq;
+				~playTile.value(s, amps);
 
-						if (~vocoderMode) {
-							~toneArray[i].set(\freq, frq);
-							~vocoderArray[i].set(\amp, sqrt(amps[i] * ~ampRef) * 0.15);
-						} {
-							if (~constantTone,
-								{
-									~toneArray[i].set(\freq, frq, \amp, sqrt(amps[i]*~ampRef));  // for modular
-								},
-								{
-									Synth(\triangle, ["freq", frq, "out", i%o.numOutputBusChannels, "amp", amps[i]*~ampRef ] );
-								}
-							);
-						};
-					}
-				);
 				id = ratios.order;
 				ratios[id].postln;
 				notes[id].postln;
