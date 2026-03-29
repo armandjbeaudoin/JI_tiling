@@ -17,14 +17,14 @@ There are several blocks to run in order:
 // OPTIONS
 //====================================================================================================
 (
-~baseFreq = 261.63;        // reference frequency for unity
+~baseFreq = 261.63/2;        // reference frequency for unity
 ~ampRef = 0.9;             // reference amplification
 
 ~constantTone = true;     // constant tone, for use with modular and vocoder
-~vocoderMode = true;      // true = software vocoder (requires ~constantTone = true)
+~vocoderMode = false; // true;      // true = software vocoder (requires ~constantTone = true)
 ~vocoderAmp = 2.0;        // carrier pre-gain; compensates for power loss through narrow BPF bands (rq=0.05 passes ~6x less energy than rq=0.3)
 
-~modulo2 = true;          // points along axis are taken as [...-1,0,-1,0,1,0,1,...]
+~modulo2 = false;          // points along axis are taken as [...-1,0,-1,0,1,0,1,...]
 ~oneOctave = false;        // restrict frequencies to a single octave
 
 ~selectedTile = -1;        // index of currently highlighted tile (-1 = none)
@@ -388,15 +388,16 @@ if (~vocoderMode) {
 	// vocoder carrier because it spreads energy across many harmonics for the bandpass
 	// filters to sculpt.  Adjust the -/+ arguments in Fold to specify amound of folding.
 	SynthDef(\carrierVocode, {
-		arg out = 0, freq = 220, amp = 0.5;
-		var sig, fld=0.75;
-		// sig = (1.0/0.75)*Fold.ar(LFTri.ar(freq),-0.75,0.75);
-/*		sig = (1.0/0.66667)*Fold.ar(SinOsc.ar(freq),-0.66667,0.66667);*/
-		    // Create three harmonics (fundamental + 2 overtones)
-		sig =   0.6*(1.0/fld)*Fold.ar(LFTri.ar(freq),fld.neg,fld) +      // Fundamental
-		       0.25*(1.0/fld)*Fold.ar(LFTri.ar(freq*2),fld.neg,fld) +    // 2nd harmonic
-		      0.05*(1.0/fld)*Fold.ar(LFTri.ar(freq*3),fld.neg,fld) +    // 3rd harmonic
-		      0.1*(1.0/fld)*Fold.ar(LFTri.ar(freq*4),fld.neg,fld);     // 4th harmonic
+		arg out = 0, freq = 220, amp = 0.5, lag = 0.0, fld = 0.75;
+		var sig, laggedFreq;
+
+		laggedFreq = VarLag.kr(freq, lag, -8);
+
+		sig =  0.6  * (1.0/fld) * Fold.ar(LFTri.ar(laggedFreq),     fld.neg, fld) +  // Fundamental
+		       0.25 * (1.0/fld) * Fold.ar(LFTri.ar(laggedFreq * 2), fld.neg, fld) +  // 2nd harmonic
+		       0.05 * (1.0/fld) * Fold.ar(LFTri.ar(laggedFreq * 3), fld.neg, fld) +  // 3rd harmonic
+		       0.1  * (1.0/fld) * Fold.ar(LFTri.ar(laggedFreq * 4), fld.neg, fld);   // 4th harmonic
+
 		Out.ar(out, amp * sig);
 	}).add;
 
@@ -441,58 +442,18 @@ if (~vocoderMode) {
 	}).add;
 };
 
-//a simple sine wave with envelope
-SynthDef(\tone, {arg amp = 0.05, freq = 220, out = 0,
-	attack = 0.1, sustain = 0.5, release = 1.5;
-var env, snd;
-env = Env.linen(attack, sustain, release, amp, \welch).kr(doneAction: Done.freeSelf);
-	snd = SinOsc.ar(freq);
-Out.ar(out, env*snd);
-}).add;
-
 SynthDef(\toneConstant, {
-	arg amp = 0.05, freq = 220, out = 0;
-	var snd;
+	arg amp = 0.05, freq = 220, out = 0, lag = 0.0, fld=0.9;
+	var snd, laggedFreq;
 
+	// The lag of -8 was taken from Fieldsteel video of large projects @9:45
+	// https://www.youtube.com/watch?v=wC-bj7Ajvhs&t=1963s
+	// sounds less sweepy than the default
+	laggedFreq = VarLag.kr(freq, lag,-8);
 	// Create three harmonics (fundamental + 2 overtones)
-/*    snd = SinOsc.ar(freq, 0, amp * 0.5) +      // Fundamental
-          SinOsc.ar(freq * 2, 0, amp * 0.25) +  // 2nd harmonic
-          SinOsc.ar(freq * 3, 0, amp * 0.125);  // 3rd harmonic*/
-	snd = SinOsc.ar(freq);
+	// snd = SinOsc.ar(laggedFreq);
+	snd = (1.0/fld)*Fold.ar(LFTri.ar(laggedFreq),fld.neg,fld);
 	Out.ar(out, amp*snd);
-}).add;
-
-//Carp Lust Wrong
-SynthDef(\pluck, {arg out=0, amp = 0.05, wnamp=0.1, freq = 440, decay = 5, mutedString = 0.05;
-var env, snd;
-env = Env.linen(0, decay, 0).kr(doneAction: 2);
-snd = Pluck.ar(
-in: WhiteNoise.ar(wnamp),
-trig: Impulse.kr(0),
-maxdelaytime: 0.1,
-delaytime: freq.reciprocal,
-decaytime: decay,
-coef: mutedString);
-Out.ar(out, amp*snd);
-}).add;
-
-// Define the synth with harmonics
-SynthDef(\harmonicSynth, {
-    arg out=0, freq = 440, amp = 0.3, attack = 0.1, sustain = 0.5, release = 1.5;
-    var sig, env;
-
-    // Create three harmonics (fundamental + 2 overtones)
-    sig = SinOsc.ar(freq, 0, amp * 0.5) +      // Fundamental
-          SinOsc.ar(freq * 2, 0, amp * 0.25) +  // 2nd harmonic
-          SinOsc.ar(freq * 3, 0, amp * 0.125);  // 3rd harmonic
-
-    // Envelope for smooth attack and release
-    // env = EnvGen.kr(Env.asr(0.01, 1, 0.5), gate, doneAction: 2);
-	env = Env.linen(attack, sustain, release, amp, \welch).kr(doneAction: Done.freeSelf);
-
-    sig = sig * env;
-
-    Out.ar(out, sig ! 2); // Stereo output
 }).add;
 
 SynthDef(\triangle, {
@@ -512,21 +473,6 @@ SynthDef(\triangle, {
 	sig = sig * env;
 	Out.ar(out, sig); // ! 2); // Stereo output
 }).add;
-
-SynthDef(\triangleConstant, {
-	arg amp = 0.5, freq = 220, out = 0;
-	var numHarmonics = 30, ampScale=0.05;
-	var sig = 0;
-
-		for(1, numHarmonics, {
-		|i|
-		var n = 2 * i - 1; // Create the harmonic number
-		var phase = if(i % 2 == 0, {0}, {pi}); // Alternate phase - a conditional is an expression
-		sig = sig + SinOsc.ar(freq * n, phase, ampScale * amp * (1/n.squared));
-
-		Out.ar(out, amp*sig);
-	});
-}).add;
 )
 
 //====================================================================================================
@@ -543,11 +489,34 @@ SynthDef(\triangleConstant, {
 		~playTile.value(tile, nil);
 	},
 	'/Tile');
+
+~lagSlider = OSCFunc(
+	{
+		arg msg, time, addr, recvPort;
+		var lg;
+
+		lg = 8*msg[1];
+		~toneArray.do(_.set(\lag, lg));
+	},
+	'/lag');
+
+~foldSlider = OSCFunc(
+	{
+		arg msg, time, addr, recvPort;
+		var fl;
+
+		fl = 0.5+(0.5*msg[1]);
+		~toneArray.do(_.set(\fld, fl));
+	},
+	'/fold');
 )
 
 // Free the OSC function
+(
 ~tileTones.free;
-
+~lagSlider.free;
+~foldSlider.free;
+)
 // Some code for debugging the OSC connection
 
 // OSCFunc.trace(true);
@@ -617,6 +586,7 @@ if (~vocoderMode) {
 		if (~constantTone,
 			{
 				~toneArray[i] = Synth.new(\toneConstant, ["freq", ~baseFreq, "out", op, "amp", ap ]);
+				~toneArray[i].set(\lag, 0.5);
 			}
 		);
 	});
@@ -789,6 +759,7 @@ if (~vocoderMode) {
 };
 )
 
+~toneArray.do(_.set(\fld, 0.8))
 
 s.record // start again
 
