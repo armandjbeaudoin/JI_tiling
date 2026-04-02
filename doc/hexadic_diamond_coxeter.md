@@ -200,18 +200,262 @@ foundation:
 | | Penrose tiling | Hexadic Diamond |
 |---|---|---|
 | **Source** | ℤ⁵ lattice | A₄ roots + weights + origin |
+| **Coxeter pair** | {I₂⁵, A₄}, degree N = 2 | same |
+| **Field extension** | ℚ(√5), Galois conjugation √5 → −√5 | same |
 | **Selection** | geometric window in E⊥ | combinatorial (at most 1 pos, 1 neg exponent) |
 | **Projection space** | E∥ (72° eigenplane) | E∥ (same eigenplane) |
+| **Internal space** | E⊥ (144° eigenplane), phason degrees of freedom | E⊥ (same eigenplane), controls radius ratio |
 | **Result** | infinite aperiodic tiling | finite 31-point diagram |
-| **Golden ratio appears as** | tile length ratio, inflation | outer/middle root ring ratio |
+| **Golden ratio appears as** | tile length ratio, inflation factor λ₊ = τ | outer/middle root ring ratio |
+| **Galois conjugate appears as** | ⊥-space contraction λ₋ = σ | inner ring angular offset |
 | **Coxeter element role** | defines E∥ / E⊥ decomposition | defines projection + star orbits |
 | **Root vectors become** | tile edge directions | musical interval ratios |
+| **Translation vector **q**₀** | parallel part = rigid shift; ⊥ part = phason | not applicable (finite selection, no window) |
 
 Both constructions begin with the same permutation matrix P (the Coxeter
 element of A₄), diagonalize it to obtain E∥, and project lattice structures
 to this plane. The Penrose tiling uses the full lattice with a geometric filter;
 the Hexadic Diamond uses a finite, algebraically natural subset of the root
 system.
+
+---
+
+## The Coxeter Pair {I₂⁵, A₄} and the Cut-and-Project Construction
+
+The relationship between the Hexadic Diamond and Penrose tilings can be made
+fully precise through the theory of *Coxeter pairs* developed by Boyle and
+Steinhardt (Phys. Rev. B 106, 144113, 2022). This section develops the
+connection in detail, including the Galois conjugation that relates the
+parallel and perpendicular spaces, the role of the translation vector **q**₀,
+and worked numerical examples.
+
+### The Coxeter Pair
+
+A Coxeter pair consists of a noncrystallographic root system θ∥ (of lower
+rank d∥) paired with a crystallographic root system θ (of higher rank d) such
+that:
+
+1. Both have the same rational rank (they live in the same ℚ-vector space).
+2. The maximally symmetric projection of the θ roots onto d∥ dimensions
+   yields N copies of the θ∥ roots.
+
+For the Penrose tiling and the Hexadic Diamond, the relevant pair is
+{I₂⁵, A₄}, which is a *quadratic* Coxeter pair of degree N = 2. The
+noncrystallographic root system I₂⁵ has rank 2 (its 10 roots are the edge
+midpoints of a regular pentagon in 2D), and its crystallographic partner A₄
+has rank 4 (its 20 roots live in the hyperplane Σxᵢ = 0 of ℝ⁵). Under the
+Coxeter-plane projection, the 20 A₄ roots project onto *two* concentric
+copies of the 10 I₂⁵ roots — an inner ring and an outer ring longer by the
+golden ratio τ.
+
+The complete list of quadratic Coxeter pairs is:
+
+| θ∥   | θ        | Field 𝕂     | Relevant symmetry     |
+|------|----------|-------------|-----------------------|
+| I₂⁵  | A₄       | ℚ(√5)       | 5-fold / 10-fold (Penrose) |
+| I₂⁸  | B₄/C₄    | ℚ(√2)       | 8-fold (Ammann-Beenker) |
+| I₂¹² | F₄       | ℚ(√3)       | 12-fold              |
+| H₃   | D₆       | ℚ(√5)       | Icosahedral (3D)     |
+| H₄   | E₈       | ℚ(√5)       | Hyper-icosahedral (4D) |
+
+### Galois Conjugation: Relating E∥ and E⊥
+
+For a quadratic Coxeter pair, the field extension is 𝕂 = ℚ(√D) where D is a
+square-free positive integer (D = 5 for the Penrose case). The embedding space
+splits into two subspaces of equal dimension:
+
+- **E∥** (parallel space, "+"), where the physical tiling lives
+- **E⊥** (perpendicular space, "−"), the internal/phason space
+
+These two spaces are related by the Galois conjugation √D → −√D. In the
+Penrose case this sends √5 → −√5, which is equivalent to:
+
+    τ = (1 + √5)/2  ↦  σ = (1 − √5)/2
+
+This conjugation appears concretely in the eigenspaces of the Coxeter element
+P. As described in §4 above, P has eigenvalues e^(±2πi/5) (spanning E∥) and
+e^(±4πi/5) (spanning E⊥). The doubling 2π/5 → 4π/5 *is* the Galois
+conjugation acting on the roots of unity: since cos 2π/5 = (√5 − 1)/4, 
+replacing √5 → −√5 gives cos 4π/5 = −(√5 + 1)/4.
+
+The projection bases for the two subspaces are:
+
+    E∥: (P⁺)ᵢ = √(2/5) (cos 2πi/5, sin 2πi/5)
+
+    E⊥: (P⁻)ᵢ = √(2/5) (cos 4πi/5, sin 4πi/5)
+
+Any rational point **x** in the embedding space splits as **x** = P⁺**x** + P⁻**x**,
+and the two sets of 2D coordinates are related by √5 → −√5: if the parallel
+coordinates involve expressions like (√5 − 1)/4, the perpendicular coordinates
+involve (−√5 − 1)/4.
+
+This is the same Galois conjugation that produces the two rings of projected
+roots in the Hexadic Diamond: the outer/middle radius ratio τ arises because
+the d = 2 roots (εᵢ − εᵢ₊₂) involve cos 4π/5 while the d = 1 roots
+(εᵢ − εᵢ₊₁) involve cos 2π/5, and these are Galois conjugates of each other.
+
+### Self-Similar 1D Quasilattices and the Substitution Rule
+
+The Ammann pattern underlying the Penrose tiling is built from five families
+of parallel lines, each spaced according to a 1D Fibonacci quasilattice. These
+quasilattices are described by the floor form (Eq. 1 of Boyle & Steinhardt,
+arXiv:1608.08220):
+
+    xₙ = S(n − α) + (L − S)⌊κ(n − β)⌋
+
+where L and S are the long and short intervals, κ = 1/τ is the frequency
+parameter, α is the translational phase, and β is the phason phase. The
+parameters for the Penrose case (Case 1, Table I of the 1D paper) are:
+
+| Parameter | Value | Expression |
+|-----------|-------|------------|
+| λ₊ (scale factor) | 1.6180… | (1 + √5)/2 = τ |
+| λ₋ (⊥ contraction) | −0.6180… | (1 − √5)/2 = σ |
+| m₂⁺/m₁⁺ (tile ratio) | τ | (1 + √5)/2 |
+| m₂⁻/m₁⁻ (frequency ratio) | σ | (1 − √5)/2 |
+| m₁⁺ | 0.2764… | (5 − √5)/10 |
+| m₂⁺ | 0.4472… | 1/√5 |
+| κ₁ | 0.6180… | 1/τ |
+| κ₂ | 0.3820… | 2 − τ |
+
+The substitution matrix τ = [[0,1],[1,1]] has eigenvalues λ₊ = τ and λ₋ = σ.
+The eigenvector for λ₊ determines tile length ratios in E∥; the eigenvector
+for λ₋ determines tile frequency ratios in E⊥. These are Galois conjugates.
+
+The canonical substitution rule is:
+
+    S′ → (L/2)(L/2)
+    L′ → (L/2)S(L/2)
+
+### The Star Vectors and Their Galois Conjugates
+
+The Ammann pattern is constructed from a star of unit vectors in E∥:
+
+    **a**ⱼ⁺ = (cos 2πj/5, sin 2πj/5)    j = 0, …, 4
+
+Each 2D vector lifts to a 4D vector **a**ⱼ in the A₄ embedding space, and the
+perpendicular projection gives the Galois conjugate:
+
+    **a**ⱼ⁻ = (cos 4πj/5, sin 4πj/5)
+
+A second set of vectors is defined by **b**ⱼ⁺ = −(m₁⁻/m₂⁻) **a**ⱼ⁺ = τ **a**ⱼ⁺, with
+the perpendicular counterpart **b**ⱼ⁻ = σ **a**ⱼ⁻. For j = 1:
+
+| Vector | E∥ components | E⊥ components |
+|--------|--------------|--------------|
+| **a**₁ | (cos 2π/5, sin 2π/5) ≈ (0.3090, 0.9511) | (cos 4π/5, sin 4π/5) ≈ (−0.8090, 0.5878) |
+| **b**₁ | τ(cos 2π/5, sin 2π/5) ≈ (0.5000, 1.5388) | σ(cos 4π/5, sin 4π/5) ≈ (0.5000, −0.3633) |
+
+These satisfy the decoupling identity (Eq. 20 of the Coxeter paper):
+
+    m₁± **a**ⱼ∓ + m₂± **b**ⱼ∓ = 0
+
+This can be verified directly: **b**ⱼ⁻ = σ **a**ⱼ⁻, so
+m₁⁺ **a**ⱼ⁻ + m₂⁺ **b**ⱼ⁻ = m₁⁺ **a**ⱼ⁻ + τ m₁⁺ σ **a**ⱼ⁻ = m₁⁺(1 + τσ) **a**ⱼ⁻ = 0
+since τσ = −1. This identity ensures that the translational phase χ⁺ and the
+phason phase χ⁻ decouple completely in Eq. (18).
+
+### The Translation Vector **q**₀ and the Cut-and-Project Scheme
+
+The vector **q**₀ in Eq. (12) of the Coxeter paper is the offset of the cut
+surface from the origin of the A₄ lattice. It is the translation vector of
+the standard cut-and-project construction. Its decomposition into parallel and
+perpendicular parts plays two distinct roles:
+
+- **q**₀⁺ (parallel part): translates the tiling rigidly in physical space.
+  This appears in Eq. (18) through χ⁺, which shifts the argument (n − χ⁺)
+  in the floor form — a uniform slide of all Ammann lines that does not
+  change the combinatorial structure.
+
+- **q**₀⁻ (perpendicular part): the phason degree of freedom. This appears
+  through χ⁻, which shifts the argument inside the floor function
+  ⌊κ(n − χ⁻)⌋, changing where the floor function jumps and thereby
+  rearranging the L/S ordering. Different values of **q**₀⁻ give tilings
+  that are locally isomorphic but globally distinct.
+
+Under inflation, the phases transform as χ± → χ±/λ± (Eq. 21). The condition
+for a self-same tiling (one identical to itself after inflation, up to
+rescaling) is that **q**₀ is a fixed point of this transformation modulo the
+A₄ lattice.
+
+The star vectors **a**ⱼ⁺ in 2D serve as an overcomplete frame (five vectors
+spanning ℝ²). They are the projections of directions that form a proper basis
+in the 4D embedding space. In the dualization formula (Eq. 32), each cell of
+the multigrid is labeled by five integer coordinates (ν₁, …, ν₅), and the
+dual vertex is:
+
+    **x**′ = −**q**₀∥ + (m̄⁺/γ) Σⱼ νⱼ **e**ⱼ
+
+where m̄⁺ is the average step size, γ = 5/2, and the representation is
+overcomplete (five coordinates for a 2D space), with the redundancy resolved
+by the pentagrid constraints.
+
+### Worked Example: Decomposing **q**₀
+
+Consider a specific translation vector expressed as a rational linear
+combination of the A₄ fundamental roots:
+
+    **q**₀ = (1/3) **f**₁ + (1/7) **f**₂ + (1/5) **f**₃ + (2/5) **f**₄
+
+Using the fundamental roots from Eq. (36) of the Coxeter paper:
+
+    **f**₁ = (−1, +1, 0, 0, 0),  **f**₂ = (0, −1, +1, 0, 0)
+    **f**₃ = (0, 0, −1, +1, 0),  **f**₄ = (0, 0, 0, −1, +1)
+
+this gives in ℝ⁵:
+
+    **q**₀ = (−0.3333, 0.1905, −0.0571, −0.2000, 0.4000)
+
+Projecting onto E∥ and E⊥ using the orthonormalized bases:
+
+    **q**₀⁺ = (0.0362, −0.0729)      (small — translational phase)
+    **q**₀⁻ = (−0.5633, −0.1638)     (large — phason phase)
+
+The striking asymmetry illustrates how the Galois conjugation redistributes
+the same rational coefficients very differently between the two subspaces.
+
+### Computing the Phase Parameters χ±
+
+From Eq. (18), with ({α}, {β}) = (0, 0), the phase parameters for each
+Ammann direction j = 0, …, 4 are:
+
+    χ₁,ⱼ± = (1 + (m₂±/m₁±)²) **a**ⱼ± · **q**₀±
+
+Since m₂⁺/m₁⁺ = τ, the parallel prefactor is 1 + τ² = 2 + τ ≈ 3.618.
+Since m₂⁻/m₁⁻ = σ, the perpendicular prefactor is 1 + σ² = 2 + σ ≈ 1.382.
+
+The computed values are:
+
+| j | χ₁,ⱼ⁺ (translational) | χ₁,ⱼ⁻ (phason) |
+|---|----------------------|----------------|
+| 0 | +0.1308 | −0.7783 |
+| 1 | −0.2105 | +0.4966 |
+| 2 | −0.2609 | −0.0252 |
+| 3 | +0.0492 | −0.4558 |
+| 4 | +0.2913 | +0.7627 |
+
+The χ⁺ values are all small (comparable to **q**₀⁺) and produce only a rigid
+shift of the Ammann lines. The χ⁻ values are much larger and enter the floor
+function ⌊κ₁(n − χ₁,ⱼ⁻)⌋, where they control the L/S ordering of intervals
+along each direction — the structural content of the tiling.
+
+### Connection to the Hexadic Diamond
+
+The Hexadic Diamond uses the *same* Coxeter-plane projection (E∥, the 72°
+eigenplane) and the *same* decomposition E∥ ⊕ E⊥ as the Penrose tiling
+cut-and-project scheme. The difference lies in what is projected:
+
+- **Penrose tiling**: projects all A₄ lattice points within a geometric
+  acceptance window in E⊥, producing an infinite aperiodic pattern.
+- **Hexadic Diamond**: projects a finite algebraically-selected subset
+  (the 20 roots, 10 weights, and origin), producing a finite 31-point
+  diagram.
+
+The golden ratio τ that appears as the outer/middle radius ratio in the
+Hexadic Diamond is the *same* τ that appears as the inflation scale factor
+λ₊ in the Penrose tiling, and both arise from the eigenvalue structure of the
+Coxeter element of A₄ acting on E∥ vs E⊥ — related by the Galois conjugation
+√5 → −√5.
 
 ---
 

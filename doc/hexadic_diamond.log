@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.22)  27 MAR 2026 10:21
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.22)  29 MAR 2026 20:52
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -418,24 +418,13 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 24.
 (/usr/local/texlive/2026/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-
-LaTeX Warning: Citation `senechal1995' on page 1 undefined on input line 33.
-
-
-LaTeX Warning: Citation `boyleSteinhardt2022' on page 1 undefined on input line
- 33.
-
-
-LaTeX Warning: Citation `boyleSteinhardt2022' on page 1 undefined on input line
- 42.
-
-<../hexadic_diamond_coxeter.png, id=4, 722.7pt x 722.7pt>
+<../hexadic_diamond_coxeter.png, id=47, 722.7pt x 722.7pt>
 File: ../hexadic_diamond_coxeter.png Graphic file (type png)
 <use ../hexadic_diamond_coxeter.png>
 Package pdftex.def Info: ../hexadic_diamond_coxeter.png  used on input line 44.
 
 (pdftex.def)             Requested size: 352.6793pt x 352.68149pt.
-[1
+ [1
 
 {/usr/local/texlive/2026/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 
@@ -453,60 +442,53 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 [2 <../hexadic_diamond_coxeter.png>]
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 98.
+(hyperref)                removing `math shift' on input line 99.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\zeta' on input line 98.
+(hyperref)                removing `\zeta' on input line 99.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `subscript' on input line 98.
+(hyperref)                removing `subscript' on input line 99.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 98.
+(hyperref)                removing `math shift' on input line 99.
 
 
-LaTeX Warning: Command \textdegree invalid in math mode on input line 105.
+LaTeX Warning: Command \textdegree invalid in math mode on input line 106.
 
 
-LaTeX Warning: Command \textdegree invalid in math mode on input line 105.
+LaTeX Warning: Command \textdegree invalid in math mode on input line 106.
 
 Missing character: There is no ° in font cmr10!
 
-LaTeX Warning: Command \textdegree invalid in math mode on input line 108.
+LaTeX Warning: Command \textdegree invalid in math mode on input line 109.
 
 
-LaTeX Warning: Command \textdegree invalid in math mode on input line 108.
+LaTeX Warning: Command \textdegree invalid in math mode on input line 109.
 
 Missing character: There is no ° in font cmr10!
 
-Overfull \hbox (0.80196pt too wide) in paragraph at lines 123--134
+Overfull \hbox (0.80196pt too wide) in paragraph at lines 124--135
  [] 
  []
 
 
-LaTeX Warning: Command \textdegree invalid in math mode on input line 137.
+LaTeX Warning: Command \textdegree invalid in math mode on input line 138.
 
 
-LaTeX Warning: Command \textdegree invalid in math mode on input line 137.
+LaTeX Warning: Command \textdegree invalid in math mode on input line 138.
 
 Missing character: There is no ° in font cmr10!
 [3{/usr/local/texlive/2026/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc
 }]
 
-LaTeX Warning: Citation `senechal1995' on page 4 undefined on input line 156.
+LaTeX Warning: Command \textdegree invalid in math mode on input line 188.
 
 
-LaTeX Warning: Citation `boyleSteinhardt2022' on page 4 undefined on input line
- 176.
-
-
-LaTeX Warning: Command \textdegree invalid in math mode on input line 186.
-
-
-LaTeX Warning: Command \textdegree invalid in math mode on input line 186.
+LaTeX Warning: Command \textdegree invalid in math mode on input line 188.
 
 Missing character: There is no ° in font cmr10!
 [4] [5] (./hexadic_diamond.aux)
@@ -514,27 +496,14 @@ Missing character: There is no ° in font cmr10!
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
-
-
-LaTeX Warning: There were undefined references.
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
-
-Package rerunfilecheck Warning: File `hexadic_diamond.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `hexadic_diamond.out':
-(rerunfilecheck)             Before: D41D8CD98F00B204E9800998ECF8427E;0
-(rerunfilecheck)             After:  B68DDC021AFF38896B1156570EA496BB;1971.
+Package rerunfilecheck Info: File `hexadic_diamond.out' has not changed.
+(rerunfilecheck)             Checksum: B68DDC021AFF38896B1156570EA496BB;1971.
  ) 
 Here is how much of TeX's memory you used:
- 10418 strings out of 467525
- 157641 string characters out of 5418982
- 581457 words of memory out of 5000000
- 39185 multiletter control sequences out of 15000+600000
+ 10429 strings out of 467525
+ 157763 string characters out of 5418982
+ 581564 words of memory out of 5000000
+ 39196 multiletter control sequences out of 15000+600000
  641410 words of font info for 93 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  75i,8n,79p,617b,460s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -555,10 +524,10 @@ e/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/
 026/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/20
 26/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texliv
 e/2026/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb>
-Output written on hexadic_diamond.pdf (5 pages, 297591 bytes).
+Output written on hexadic_diamond.pdf (5 pages, 298606 bytes).
 PDF statistics:
- 140 PDF objects out of 1000 (max. 8388607)
- 96 compressed objects within 1 object stream
+ 177 PDF objects out of 1000 (max. 8388607)
+ 132 compressed objects within 2 object streams
  21 named destinations out of 1000 (max. 500000)
- 6 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 86 words of extra memory for PDF output out of 10000 (max. 10000000)
 
