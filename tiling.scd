@@ -20,7 +20,7 @@ There are several blocks to run in order:
 ~baseFreq = 261.63/2;        // reference frequency for unity
 ~ampRef = 0.9;             // reference amplification
 
-~constantTone = true;     // constant tone, for use with modular and vocoder
+~constantTone = false; //true;     // constant tone, for use with modular and vocoder
 ~vocoderMode = false; // true;      // true = software vocoder (requires ~constantTone = true)
 ~vocoderAmp = 2.0;        // carrier pre-gain; compensates for power loss through narrow BPF bands (rq=0.05 passes ~6x less energy than rq=0.3)
 
