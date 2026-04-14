@@ -5,7 +5,11 @@ anaconda_projects/
 backup/
 dal.pdf
 
+penrose_player/.build
+penrose_player/PenroseTiling.app
+
 # LaTeX build artifacts
 doc/*.aux
 doc/*.log
 doc/*.synctex.gz
+

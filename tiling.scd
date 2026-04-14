@@ -17,10 +17,10 @@ There are several blocks to run in order:
 // OPTIONS
 //====================================================================================================
 (
-~baseFreq = 261.63/2;        // reference frequency for unity
+~baseFreq = 261.63/4;        // reference frequency for unity
 ~ampRef = 0.9;             // reference amplification
 
-~constantTone = false; //true;     // constant tone, for use with modular and vocoder
+~constantTone = true;     // constant tone, for use with modular and physical vocoder
 ~vocoderMode = false; // true;      // true = software vocoder (requires ~constantTone = true)
 ~vocoderAmp = 2.0;        // carrier pre-gain; compensates for power loss through narrow BPF bands (rq=0.05 passes ~6x less energy than rq=0.3)
 
@@ -28,6 +28,7 @@ There are several blocks to run in order:
 ~oneOctave = false;        // restrict frequencies to a single octave
 
 ~selectedTile = -1;        // index of currently highlighted tile (-1 = none)
+~tileWindowSize = 600;     // size of the tile window
 )
 
 //====================================================================================================
@@ -51,7 +52,7 @@ There are several blocks to run in order:
 	ymn = 1e6;
 	ymx = -1e6;
 
-	for (1,v.size-1,
+	for (0,v.size-1,
 		{
 			arg i;
 			for (0,3,
@@ -72,9 +73,12 @@ There are several blocks to run in order:
 ~lattice_scale = {
 	// will overwrite the original lattice array
 	arg l, b, v; // lattice limits, window bounds and vertices
-	var s;
+	var ofst, s, scl;
 
 	s = [(b[0]-1)/(l[1]-l[0]), (b[1]-1)/(l[3]-l[2])];
+	if (s[1]>s[0],{scl=s[0]},{scl=s[1]});
+	ofst = [(b[0]-(scl*(l[1]-l[0])))/2, (b[1]-(scl*(l[3]-l[2])))/2];
+	ofst.postln;
 
 	for (0,v.size-1,
 		{
@@ -83,8 +87,11 @@ There are several blocks to run in order:
 				{
 					arg j;
 
-					v[i][2*j]     = (s[0]*(v[i][2*j]-l[0]));
-					v[i][(2*j)+1] = (s[1]*(v[i][(2*j)+1]-l[2]));
+					// v[i][2*j]     = (s[0]*(v[i][2*j]-l[0]));
+					// v[i][(2*j)+1] = (s[1]*(v[i][(2*j)+1]-l[2]));
+					v[i][2*j]     = ofst[0] + (scl*(v[i][2*j]-l[0]));
+					// Flip vertical coordinate (subtract from upper vertical limit
+					v[i][(2*j)+1] = ofst[1] + (scl*(l[3]-v[i][(2*j)+1]));  // flip vertical coordinate
 				}
 			);
 		}
@@ -116,8 +123,24 @@ in the button (used to select different lattice parameter choices).
 			{ p = ~indices[cell][(node*5)+i];}
 		);
 		f = f * (~intervals[i]**p);
+		[f,p].postln;
 	});
 	f;
+};
+
+~freqRatio = {
+	arg cell,node;
+	var num=1, den=1, p, itvl;
+
+	itvl = ~latticeParameters[~currentInterval];
+
+	for(0, 4, {arg i;
+		p = ~indices[cell][(node*5)+i];
+		[itvl[i], p, itvl[i]**p].postln;
+		if (p>0,{num = num * (itvl[i]**p);});
+		if (p<0,{den = den * (itvl[i]**p);});
+	});
+	[num,den];
 };
 
 ~singleOctave = {
@@ -125,8 +148,18 @@ in the button (used to select different lattice parameter choices).
 	var r;
 
 	r = f;
-	while ( {r>2.0}, {r = r/2.0} );
-	while ( {r<=1.0}, {r = r*2.0} );
+	while ( {r>=2.0}, {r = r/2.0} );
+	while ( {r<1.0}, {r = r*2.0} );
+	r
+};
+
+~limitRange = {
+	arg f;
+	var r;
+
+	r = f;
+	while ( {r>=16.0}, {r = r/2.0} );
+	while ( {r<0.25}, {r = r*2.0} );
 	r
 };
 
@@ -295,7 +328,7 @@ esplicit solution given in the link above -- for this specific case.
 	for(0, 3, { arg i;
 		var frq;
 		frq = ~freqScale.value(tile, i);
-		if (~oneOctave, { frq = ~singleOctave.value(frq) });
+		if (~oneOctave, { frq = ~singleOctave.value(frq) }, { frq = ~limitRange.value(frq) });
 		frq = ~baseFreq * frq;
 
 		if (~vocoderMode) {
@@ -601,7 +634,7 @@ As it currently stands, the vertices are scaled to the window.  To recover the o
 vertex coordinates, it is necessary to re-read the file.
 */
 (
-w = Window.new("Penrose", Rect(600, 100, 600, 600)).front;
+w = Window.new("Penrose", Rect(100, 100, ~tileWindowSize,~tileWindowSize)).front;
 w.view.background_(Color.white);
 
 w.drawFunc = {
@@ -709,7 +742,7 @@ v.mouseDownAction_(
 				for(0, 3, { arg i;
 					var frq;
 					frq = ~freqScale.value(s, i);
-					if (~oneOctave, { frq = ~singleOctave.value(frq) });
+					if (~oneOctave, { frq = ~singleOctave.value(frq) }, { frq = ~limitRange.value(frq) });
 					ratios[i] = frq;
 					notes[i] = noteNames[ round(12*log2(~singleOctave.value(frq))).asInteger ];
 				});
@@ -718,6 +751,7 @@ v.mouseDownAction_(
 
 				id = ratios.order;
 				ratios[id].postln;
+				ratios[id].asFraction(fasterBetter: true).postln;
 				notes[id].postln;
 			}
 		);
@@ -728,7 +762,7 @@ v.mouseDownAction_(
 // Create a button, update with the current choices for the lattice
 
 ~button = Button(w,
-	Rect(10, 10, 120, 40)
+	Rect(10, 550, 120, 40)
 );
 
 ~button.string_(format("%",~latticeParameters[~currentInterval]));
@@ -766,3 +800,5 @@ s.record // start again
 s.stopRecording;
 
 thisProcess.platform.recordingsDir
+
+~indices
