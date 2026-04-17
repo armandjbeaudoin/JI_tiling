@@ -17,7 +17,7 @@ There are several blocks to run in order:
 // OPTIONS
 //====================================================================================================
 (
-~baseFreq = 261.63/4;        // reference frequency for unity
+~baseFreq = 261.63/3;        // reference frequency for unity
 ~ampRef = 0.9;             // reference amplification
 
 ~constantTone = true;     // constant tone, for use with modular and physical vocoder
