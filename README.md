@@ -4,11 +4,13 @@ This work begins with projection of a five-dimensional integer lattice onto a 2D
 
 A particular tile may be selected using a mouse in a (SuperCollider) window. Alternatively, TouchOsc may be used to send OSC messages to SuperCollider.  Use of TouchOsc requires a setup procedure outlined in `touchosc_buttons.ipynb`. 
 
+Erv Wilson explored the connection between just intonation and Penrose tiling in [D'ALESSANDRO, LIKE A HURRICANE](https://www.anaphoria.com/dal.pdf).
+
 ## Mathematical overview
 
 A 5×5 cyclic permutation matrix is diagonalized; its complex eigenvectors define two orthogonal 2D planes in R⁵. Points of the Z⁵ lattice whose perpendicular-space projections fall inside a convex hull "window" are selected and projected onto the principal plane, forming the quasicrystal tiling. Each rhombus tile vertex corresponds to a rational frequency ratio built from the primes {3, 5, 7, 9, 11}. [Different integer sequences may be selected in `tiling.scd`.]
 
-As an aside, the notebook `hexadicDiamond.ipynb` demonstrates that Erv Wilson's Hexadic Diamond may be generated through use of this same projection to the principal plane.
+As an aside, the notebook `hexadicDiamond.ipynb` demonstrates that Erv Wilson's Hexadic Diamond may be generated through use of this same projection to the principal plane.  Notebooks are also available that explore the connection of the hexadic diamond and tiling to Coxeter theory.
 
 ## Prerequisites
 
@@ -17,7 +19,7 @@ As an aside, the notebook `hexadicDiamond.ipynb` demonstrates that Erv Wilson's 
 
 ## Setup
 
-```bash
+```bashxsx
 pip install -r requirements.txt
 ```
 
