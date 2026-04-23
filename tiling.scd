@@ -43,6 +43,20 @@ There are several blocks to run in order:
 ~verts = CSVFileReader.readInterpret(~dir ++ "verts_5Dprojection.txt").postcs;
 ~faces = CSVFileReader.readInterpret(~dir ++ "faces_5Dprojection.txt").postcs;
 
+if (File.exists(~dir ++ "ji_membership.json"), {
+	var d = File.readAllString(~dir ++ "ji_membership.json").parseJSON;
+	~freqRatioScalar = d["freqRatioScalar"].asFloat;
+	~diamondNodes    = d["diamondNodes"].collect { |pt| pt.collect(_.asFloat) };
+	~eikosanyNodes   = d["eikosanyNodes"].collect { |pt| pt.collect(_.asFloat) };
+	("ji_membership.json loaded: Diamond=" ++ ~diamondNodes.size
+		++ "  Eikosany=" ++ ~eikosanyNodes.size).postln;
+}, {
+	~freqRatioScalar = 1.0;
+	~diamondNodes    = [];
+	~eikosanyNodes   = [];
+	"ji_membership.json not found — freqRatioScalar = 1.0".postln;
+});
+
 ~lattice_limit = {
 	arg v;
 	var xmn, xmx, ymn, ymx;
@@ -96,6 +110,13 @@ There are several blocks to run in order:
 			);
 		}
 	);
+
+	[~diamondNodes, ~eikosanyNodes].do { |nodeList|
+		nodeList.do { |pt|
+			pt[0] = ofst[0] + (scl * (pt[0] - l[0]));
+			pt[1] = ofst[1] + (scl * (l[3] - pt[1]));
+		};
+	};
 };
 
 ~lim = ~lattice_limit.value(~verts);
@@ -327,7 +348,7 @@ esplicit solution given in the link above -- for this specific case.
 
 	for(0, 3, { arg i;
 		var frq;
-		frq = ~freqScale.value(tile, i);
+		frq = ~freqScale.value(tile, i) * ~freqRatioScalar;
 		if (~oneOctave, { frq = ~singleOctave.value(frq) }, { frq = ~limitRange.value(frq) });
 		frq = ~baseFreq * frq;
 
@@ -686,6 +707,16 @@ clrs = ['grey','limegreen','darkorange','grey','darkgrey','violet','deepskyblue'
 			Pen.lineTo((~verts[i][0].asInteger)@(~verts[i][1].asInteger));
 			Pen.draw(3);
 		});
+
+	// Diamond nodes (steel blue), Eikosany nodes (firebrick); drawn on top of tiles
+	~diamondNodes.do { |pt|
+		Pen.fillColor = Color.new255(70, 130, 180, 230);
+		Pen.fillOval(Rect.aboutPoint(pt[0] @ pt[1], 5, 5));
+	};
+	~eikosanyNodes.do { |pt|
+		Pen.fillColor = Color.new255(178, 34, 34, 230);
+		Pen.fillOval(Rect.aboutPoint(pt[0] @ pt[1], 5, 5));
+	};
 	};
 
 w.acceptsMouseOver = true;
@@ -741,7 +772,7 @@ v.mouseDownAction_(
 				// Build ratios/notes for display
 				for(0, 3, { arg i;
 					var frq;
-					frq = ~freqScale.value(s, i);
+					frq = ~freqScale.value(s, i) * ~freqRatioScalar;
 					if (~oneOctave, { frq = ~singleOctave.value(frq) }, { frq = ~limitRange.value(frq) });
 					ratios[i] = frq;
 					notes[i] = noteNames[ round(12*log2(~singleOctave.value(frq))).asInteger ];
