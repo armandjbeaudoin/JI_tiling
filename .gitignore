@@ -7,6 +7,9 @@ dal.pdf
 
 penrose_player/
 
+# DEV/WIP notebooks
+notebooks/*_DEV.ipynb
+
 # LaTeX build artifacts
 doc/*.aux
 doc/*.log

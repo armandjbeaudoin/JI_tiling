@@ -26,7 +26,8 @@ jupyter lab
 
 ### Python layer
 
-- **`ji_tiling.py`** (repo root) — shared utilities imported by all notebooks via `sys.path.insert(0, '..')`.
+- **`src/ji_tiling.py`** — shared utilities imported by all notebooks via `sys.path.insert(0, '../src')`.
+- **`src/coxeter_a4.py`** — shared SageMath utilities for A4 Coxeter theory, imported similarly.
 - **`notebooks/`** — Jupyter notebooks that must be run from the `notebooks/` directory or via JupyterLab at repo root. Paths to `Data/` use `'../Data/'`.
 - when modifying notebooks, create a new cell instead of modifying, unless explicitly directed.  Once code is debugged, cells that are replaced by new code will be deleted manually.
 Key functions in `ji_tiling.py`:
@@ -49,6 +50,6 @@ The file is organized into named blocks separated by `//===` dividers, meant to 
 
 | Context | Path style |
 |---|---|
-| `ji_tiling.py` import in notebooks | `sys.path.insert(0, '..')` |
+| `src/ji_tiling.py` / `src/coxeter_a4.py` import in notebooks | `sys.path.insert(0, '../src')` |
 | `Data/` access in notebooks | `'../Data/'` |
 | `Data/` access in SuperCollider | `thisProcess.nowExecutingPath.dirname +/+ "Data/"` |

@@ -2,7 +2,7 @@
 Shared SageMath utilities for A4 Coxeter theory.
 
 Imported by hexadic_diamond_coxeter.ipynb and penrose_ammann_coxeter.ipynb via:
-    import sys; sys.path.insert(0, '..')
+    import sys; sys.path.insert(0, '../src')
     from coxeter_a4 import build_a4_system, build_eigenspaces, eigenvec_to_proj, algebraic_constants
 """
 
