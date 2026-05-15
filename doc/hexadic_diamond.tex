@@ -11,12 +11,15 @@
 \newtheorem{proposition}{Proposition}
 \newtheorem{remark}{Remark}
 
-\title{Erv Wilson's Hexadic Diamond Derived from the $A_4$ Root System}
-\author{}
+\title{Just Intonation \& Penrose Tilings}
+\author{A. J. Beaudoin}
 \date{}
 
 \usepackage{graphicx}
 \graphicspath{ {../} }
+
+\usepackage{xcolor}
+\usepackage{comment}
 
 \begin{document}
 
@@ -35,24 +38,30 @@ cut-and-project construction of Penrose tilings \cite{senechal1995,boyleSteinhar
 
 \section{Introduction}
 
-What follows is an esploration of some ideas set forth in the paper "D'ALESSANDRO, LIKE A HURRICANE," authored in 1989 by Erv Wilson \cite{wilson1989}. The associated repo provides code for 
+The use of arrays of pitches in music appear to be twofold.  First is the use of lattices in construction of Just Intonation (JI) scales \cite{Benson}. Scales may be developed through a choice of vectors with respect to a basis for the lattice. Then, there are the neo-Riemannian transformations, which provide a framework for relating harmonies -- voice leading -- without reference to a particular tonic.   For the most part, these two approaches are treated independently. However, if the neo-Riemannian tact provides for harmonic exploration freed of a particular tonic, why not let the tuning wander?  Specifically, why not pursue chord progressions with voice-leading using a just intonation lattice?
+
+There is the practical element of performance.  Things are easier to work with in two dimensions.  The graph representation embodied in Cube Dance provides a 2D representation of the (higher dimensional) relationship between the coupling of hexatonic cycles by augmented triads. So, having some mathematical framework in hand that provided for the projection of a lattice with dimension $D > 2$ to the plane would be advantageous in practice.As the specific example adopted in this effort, the mathematical machinery for construction of a Penrose Tiling provides for the projection of a 5-D lattice to a 2D plane.  The Penrose tiling has a relationship wherein each tile is defined by four nodes. Deriving the (nodal) JI pitches from the 5D lattice, each tile renders a four note chord. Moving along adjacent tiles provides for a sense of voice leading.
+
+The connection between JI and Penrose tiling is set forth in Figure 18 of  "D'ALESSANDRO, LIKE A HURRICANE," authored in 1989 by Erv Wilson \cite{wilson1989} .  Also important to the development below are his exposition of the Hexadic Diamond and the 20 pitch Eikosany given in this paper.
+
+The associated repo provides code for 
 \begin{itemize}
-\item detailing the mathematical underpinnings of Wilson's hexadic diamond, and
-\item developing of Penrose Tiling with just intonation ratios assigned to nodes of the tiling. 
+\item detailing the mathematical underpinnings of Wilson's hexadic diamond, 
+\item developing of Penrose Tiling with just intonation ratios assigned to nodes of the tiling, and
+\item "playing" the tiling using SuperCollider.
 \end{itemize}
-Figure 14 of \cite{wilson1989} shows the hexadic diamond, which may be developed from Coxeter Theory.  Figure 18 shows the extension to a Penrose tiling. This project serves to give examples of generating the diamond, a tiling, and the ability to `play' the tiling by means of supercollider.
 
-The notion that Erv Wilson's Hexadic Diamond may somehow be derived from the projection step of generating a Penrose Tiling came from regarding Figure 2.12 of Senechal. Here, a Voronoi cell -- or 5D hypercube -- is projected onto a plane orthogonal to $\{1,1,1,1,1\}$.    The projection of basis vectors in Figure 2.13 of Senechal give a hint: the projection and its reflection render the fundamental otonalities and utonalities of the Hexadic diamond.
+There are several mathematical approaches for construction of a Penrose tiling  \cite{senechal1995,boyleSteinhardt2022}. The cut \& project method where there is a partitioning into a $\perp$ and $\parallel$ space. is one of particular interest.  Before jumping into the construction of the tiling, we will take time to consider just the projection step that takes a vector from the five-dimensional space to a 2D plane.  It will be seen that this can bring insight into JI scales developed by Erv Wilson.
 
-Taking a lattice in 5D, and considering axes to be associated with integers 3,5,7,9 and 11, respectively, a connection is made in the usual musical sense (cite Benson).  For example, the point (0,-1,1,0,0) corresponds to the ratio 7/5. Taking only the resulting ratios included in the Hexadic Diamond and projecting these points using the projection operator for the // space taken in the usual cut and project procedure for generating a Penrose Tiling gives the placement of tones present in the Hexadic Diamond -- albeit with a $90^\circ$ rotation.
+\textit{Though the initial development of codes was done by the author, Claude proved quite useful in putting together the more concise exposition using SageMath. To provide reference to insights brought about using Claude, two markdown files are included which provide summaries of the interaction with Claude.  Claude was also used to put together much of the math development in this document. Text/equations derived primarily through Claude are indicated in \color{blue}blue\color{black}.}
 
-Inspection of the ratios that include both an otonal and utonal element, and the connection between ratios by lines in the Hexadic Diamond hint at some deeper structure.  There are 20 of these, and they correspond precisely with the $A_4$ root system. This can be seen by examining Fig. 3 of reference \cite{boyleSteinhardt2022}, which shows the The 20 $A_4$ roots, projected on the Coxeter plane. Connecting lines present in the Hexadic Diamond correspond to orbits of these roots.
 
-The "Four Hexadic Tilebursts" of Figure 41 in \cite{wilson1989} share something in common with the idea of a decagonal covering. Similar, or identical, constructions are given in Figure 5 of \cite{sasisekharan1986}. The upper right image is essentially the center decagonal region of Figure 15 in \cite{gummelt1996}. The connection to Coxeter Theory is made in \cite{Koca2017}; Figure 14 of this paper shows projections of a Voronoi cell andFigure 15 demonstrates tiling. A similar finding is shown  in Figure 3 of \cite{Koca2023}. This body of work suggests that Wilson's Tile Bursts could be used to construct a musical tiling, following the approach of \cite{sasisekharan1986}.  
+\section{The Hexadic Diamond and Eikosany}
 
-\includegraphics[width=0.8\textwidth]{hexadic_diamond_coxeter}
+The notion that Erv Wilson's Hexadic Diamond, Figure 14 of \cite{wilson1989} , may somehow be derived from the projection step of generating a Penrose Tiling came through regarding Figure 2.12 of Senechal \cite{senechal1995}. Here, a Voronoi cell -- or 5D hypercube -- is projected onto a plane orthogonal to $\{1,1,1,1,1\}$.    The projection of basis vectors in Figure 2.13 of \cite{senechal1995} give a hint: the projection and its reflection render the fundamental otonalities and utonalities of the Hexadic Diamond. Taking a lattice in 5D, and considering axes to be associated with integers 3,5,7,9 and 11, respectively, a connection is made in the usual musical sense \cite{Benson}.  For example, the point (0,-1,1,0,0) corresponds to the ratio 7/5. Taking only the resulting ratios included in the Hexadic Diamond and projecting these points using the projection operator for the $\parallel$ space taken in the usual cut and project procedure for generating a Penrose Tiling gives the placement of tones present in the Hexadic Diamond -- albeit with a $90^\circ$ rotation.  Inspection of the ratios that include both an otonal and utonal element, and the connection between ratios by lines in the Hexadic Diamond hint at some deeper structure.  There are 20 of these, and they correspond precisely with the $A_4$ root system. This can be seen by examining Fig. 3 of reference \cite{boyleSteinhardt2022}, which shows the The 20 $A_4$ roots, projected on the Coxeter plane, to be detailed below. Connecting lines present in the Hexadic Diamond figure highlight this structure.
 
-\section{The $A_4$ Root System}
+\color{blue}
+\subsection{The $A_4$ Root System}
 
 The root system $A_4$ has rank 4, with 20 roots living in the hyperplane
 $H = \{\mathbf{x} \in \mathbb{R}^5 : \sum x_i = 0\}$. The roots are the
@@ -76,16 +85,17 @@ The Cartan matrix encoding inner products between simple roots is
   \end{pmatrix}.
 \]
 
-Under the harmonic assignment $\varepsilon_i \mapsto p_i$ with
+Prescription of the harmonic assignment $\varepsilon_i \mapsto p_i$ with
 $(p_0,p_1,p_2,p_3,p_4) = (3,5,7,9,11)$, each root $\varepsilon_i - \varepsilon_j$
 maps to the just-intonation ratio $p_i / p_j$, yielding the 20 combination-product
 ratios of the Hexadic Diamond (e.g.\ $3/5$, $7/9$, $11/3$). The full 31 point set
-follows from consideration of the unison, "1", as a 6th generator in the hexadic
+follows from consideration of the unison, ``1", as a 6th generator in the hexadic
 set $(1, 3, 5, 7, 9, 11)$. Ratios involving unity give the five otonal, $+\varepsilon_{i}$, and
-five utonal, $-\varepsilon_{i}$, points. Finally, there is unity , $1/1$, giving a total of 31 points.
+five utonal, $-\varepsilon_{i}$, points. Finally, there is unity, $1/1$, giving a total of 31 points.
 
-
-\section{The Coxeter Element and Projection}
+\color{black} 
+As a side note, inclusion of the unison as implicit in the development will provide for connection to the Pascal Triangle, which is the starting point for Wilson in \cite{wilson1989}.
+\color{blue}
 
 \subsection{The cyclic permutation matrix}
 
@@ -107,11 +117,7 @@ $5\times 5$ circulant matrix
   \end{pmatrix},
 \]
 which has order 5 (the Coxeter number $h = 5$).  This is the same matrix used in
-development of the Penrose tiling.
-
-\subsection{Eigenspaces over $\mathbb{Q}(\zeta_5)$}
-
-The eigenvalues of $P$ are the fifth roots of unity $\omega^k = e^{2\pi i k/5}$.
+development of the Penrose tiling.The eigenvalues of $P$ are the fifth roots of unity $\omega^k = e^{2\pi i k/5}$.
 The five eigenspaces decompose $\mathbb{R}^5$ as follows:
 \begin{itemize}
   \item $k=0$ (eigenvalue $1$): the direction $(1,1,1,1,1)$, orthogonal to $H$.
@@ -131,7 +137,7 @@ is encoded as
 where $\zeta = e^{2\pi i/5}$. The coordinates in the projected plane are
 $(\mathrm{Re}(z),\,\mathrm{Im}(z))$.
 
-\section{The 31 Points of the Diamond}
+\subsection{The 31 Points of the Diamond}
 
 \begin{center}
 \begin{tabular}{clllc}
@@ -147,11 +153,21 @@ $(\mathrm{Re}(z),\,\mathrm{Im}(z))$.
 \end{tabular}
 \end{center}
 
+\color{black}
+The Hexadic Diamond as derived from Coxeter Theory is shown in Figure \ref{fig:hexadicDiamond}.  This figure is produced by the Jupyter notebook \texttt{hexadic\_diamond\_coxeter.ipynb}. \color{blue} 
 The inner ring forms a decagon (two interleaved pentagons: otonal and utonal,
 offset by $36°$). The outer/middle radius ratio is exactly the golden ratio
 $\tau = (1+\sqrt{5})/2$.
 
-\section{The Golden Ratio from Cyclotomic Arithmetic}
+\begin{figure}
+	\centering
+	\includegraphics[width=0.8\textwidth]{hexadic_diamond_coxeter}
+	\caption{ The Hexadic Diamond}
+	\label{fig:hexadicDiamond}
+\end{figure}
+	
+
+\subsection{The Golden Ratio from Cyclotomic Arithmetic}
 
 The 20 roots project to two distinct distances depending on the cyclic distance
 $d$ between their indices:
@@ -169,7 +185,7 @@ from $\cos(2\pi/5) = (\sqrt{5}-1)/4$ and $\cos(4\pi/5) = -(\sqrt{5}+1)/4$,
 both expressions in the golden ratio arising from the eigenvalue structure
 \cite{senechal1995}.
 
-\section{Star-Line Connectivity via Coxeter Orbits}
+\subsection{Star-Line Connectivity via Coxeter Orbits}
 
 The star lines of the Hexadic Diamond are generated by the action of $P$ on
 roots. Because $P \cdot (\varepsilon_i - \varepsilon_j) = \varepsilon_{i+1} -
@@ -184,12 +200,31 @@ generates an orbit of five roots. The two star patterns use four such orbits:
         bridge orbit of $\varepsilon_2 - \varepsilon_1$, containing the ratio $\frac{4}{3}$ of the utonal (blue) pentagon.
 \end{itemize}
 
+\color{black}
+
+\subsection{Intersection of Diamond \& Eikosany}
+
+The title of this subsection is taken from Figure 15 of \cite{wilson1989}.
+
+\section{Penrose Tiling}
+
+IN PROGRESS...
+
+The "Four Hexadic Tilebursts" of Figure 41 in \cite{wilson1989} share something in common with the idea of a decagonal covering. Similar, or identical, constructions are given in Figure 5 of \cite{sasisekharan1986}. The upper right image is essentially the center decagonal region of Figure 15 in \cite{gummelt1996}. The connection to Coxeter Theory is made in \cite{Koca2017}; Figure 14 of this paper shows projections of a Voronoi cell and Figure 15 demonstrates tiling. A similar finding is shown  in Figure 3 of \cite{Koca2023}. This body of work suggests that Wilson's Tile Bursts could be used to construct a larger musical tiling, following the approach of \cite{sasisekharan1986}.  
+
+
+
+\begin{comment}
 \section{Relationship to Penrose Tilings}
+
 
 The Hexadic Diamond and Penrose tilings share similar Coxeter-theoretic
 foundations.  For the Penrose tiling, it is necessary to consider the Coxeter pair $\{I^5_2,A_4\}$ as detailed in reference \cite{boyleSteinhardt2022}.
 
 TABLE BELOW NEEDS TO BE CORRECTED WITH CONSIDERATION OF BOYLE \& STEINHARDT: THE CONCEPT OF COEXETER PAIRS
+
+
+
 
 \begin{center}
 \begin{tabular}{lll}
@@ -227,7 +262,19 @@ $3^a \cdot 5^b \cdot 7^c \cdot 9^d \cdot 11^e$. Everything else---the
 projection geometry, the golden ratio in the radial structure, the star-line
 connectivity, the otonal/utonal duality---follows from Coxeter theory.
 
+\end{comment}
+
 \begin{thebibliography}{9}
+
+\bibitem{Benson}
+D.~J.~Benson,
+\textit{MUSIC: A Mathematical Offering},
+Cambridge University Press, 2007.
+
+\bibitem{douthett1998}
+J.~Douthett and P.~Steinbach,
+\textit{Parsimonious Graphs: A Study in Parsimony, Contextual Transformations, and Modes of Limited Transposition},
+Journal of Music Theory \textbf{42}, 241-263, (1998).
 
 \bibitem{wilson1965}
 E.~Wilson,
