@@ -12,7 +12,7 @@
 ~tileWindowSize = 600;     // size of the tile window
 )
 
-~baseFreq = 261.63/2;
+~baseFreq = 261.63;
 //====================================================================================================
 // GLOBAL VARIABLES & FUNCTIONS
 //====================================================================================================
@@ -332,7 +332,8 @@ esplicit solution given in the link above -- for this specific case.
 		frq = ~freqScale.value(tile, i) * ~freqRatioScalar;
 		if (~oneOctave, { frq = ~singleOctave.value(frq) }, { frq = ~limitRange.value(frq) });
 		frq = ~baseFreq * frq;
-		Synth(\triangle, ["freq", frq, "out", i%o.numOutputBusChannels, "amp", sqrt(amps[i]*~ampRef)]);
+		// Synth(\triangle, ["freq", frq, "out", i%o.numOutputBusChannels, "amp", sqrt(amps[i]*~ampRef)]);
+		Synth(\pluck, ["freq", frq, "out", i%o.numOutputBusChannels, "amp", sqrt(amps[i]*~ampRef)]);
 	});
 };
 )
@@ -370,8 +371,22 @@ SynthDef(\triangle, {
 	sig = sig * env;
 	Out.ar(out, sig); // ! 2); // Stereo output
 }).add;
-)
 
+// An example synth from "A Gentle Introduction to Supercollider"
+
+SynthDef(\pluck, {arg amp = 0.1, freq = 220, decay = 7, mutedString = 0.05;
+var env, snd;
+env = Env.linen(0, decay, 0).kr(doneAction: 2);
+snd = Pluck.ar(
+in: WhiteNoise.ar(amp),
+trig: Impulse.kr(0),
+maxdelaytime: 0.1,
+delaytime: freq.reciprocal,
+decaytime: decay,
+coef: mutedString);
+Out.ar(0, [snd, snd]);
+}).add;
+)
 
 //====================================================================================================
 // Create window and draw the tiling
