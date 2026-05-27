@@ -15,3 +15,8 @@ doc/*.aux
 doc/*.log
 doc/*.synctex.gz
 
+# Retired (superseded by pentadic.ipynb)
+notebooks/hexadic_diamond_coxeter.ipynb
+doc/hexadic_diamond_coxeter.md
+doc/eikosany_diamond_coxeter_summary.md
+
