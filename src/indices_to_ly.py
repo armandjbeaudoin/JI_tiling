@@ -19,17 +19,14 @@ import os
 
 sys.path.insert(0, os.path.dirname(__file__))
 from heji_ly import exponents_to_heji_ly
+from ji_tiling import he_representable
 
 DATA_FILE = os.path.join(os.path.dirname(__file__), "../Data/indices_5Dprojection.txt")
-
-# heji-ly maximum |exponent| per prime (from lib.scm)
-_HEJI_MAX = {1: 4, 2: 2, 4: 1}  # index in [i0,i1,i2,i3,i4] → max abs value
 
 
 def valid_for_heji(exponents):
     """Return True iff all prime exponents are within heji-ly rendering limits."""
-    _, i1, i2, i3, i4 = exponents
-    return abs(i1) <= 4 and abs(i2) <= 2 and abs(i4) <= 1
+    return he_representable(exponents)
 
 
 def tile_to_chord(exps_list, base_octave=0, ref_note="C", octave_window=2):

@@ -28,6 +28,23 @@ DIAMOND_RATIOS = [
 ]
 
 
+# ---------------------------------------------------------------------------
+# Helmholtz-Ellis notation limits, as rendered by heji-ly (lib.scm validate):
+#   prime 5 : |exp| <= 4,  prime 7 : |exp| <= 2,  prime 11 : |exp| <= 1.
+# The 3- and 9-exponents are unconstrained (9 = 3^2 folds into the 3-axis,
+# which Pythagorean accidentals handle freely).
+# ---------------------------------------------------------------------------
+HE_LIMITS = {5: 4, 7: 2, 11: 1}   # prime → max |exponent|
+
+
+def he_representable(exps):
+    """True iff a (3, 5, 7, 9, 11)-exponent vector fits the HE notation limits."""
+    _, i1, i2, _, i4 = exps
+    return (abs(i1) <= HE_LIMITS[5]
+            and abs(i2) <= HE_LIMITS[7]
+            and abs(i4) <= HE_LIMITS[11])
+
+
 def basis2D(eigenVectors, k, l):
     """Construct a 2D projection basis from two eigenvectors of the 5D rotation matrix.
 

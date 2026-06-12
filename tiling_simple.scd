@@ -10,6 +10,12 @@
 
 ~selectedTile = -1;        // index of currently highlighted tile (-1 = none)
 ~tileWindowSize = 600;     // size of the tile window
+
+// Read either the original cut-and-project pair (false) or the optimised pair
+// produced by notebooks/he_rational_optimization.ipynb (true).  The optimised
+// pair has the global rational-r shift and per-corner k_i pre-baked into
+// indices_5Doptimized.txt and freqRatioScalar = 1.0 in ji_membership_optimized.json.
+~useOptimized = false;
 )
 
 ~baseFreq = 261.63;
@@ -21,22 +27,28 @@
 // Set the file directory
 ~dir = thisProcess.nowExecutingPath.dirname +/+ "Data/";
 
-~indices = CSVFileReader.readInterpret(~dir ++ "indices_5Dprojection.txt").postcs;
-~verts = CSVFileReader.readInterpret(~dir ++ "verts_5Dprojection.txt").postcs;
-~faces = CSVFileReader.readInterpret(~dir ++ "faces_5Dprojection.txt").postcs;
+~indicesFile      = if (~useOptimized, { "indices_5Doptimized.txt" }, { "indices_5Dprojection.txt" });
+~jiMembershipFile = if (~useOptimized, { "ji_membership_optimized.json" }, { "ji_membership.json" });
 
-if (File.exists(~dir ++ "ji_membership.json"), {
-	var d = File.readAllString(~dir ++ "ji_membership.json").parseJSON;
+~indices = CSVFileReader.readInterpret(~dir ++ ~indicesFile).postcs;
+~verts   = CSVFileReader.readInterpret(~dir ++ "verts_5Dprojection.txt").postcs;
+~faces   = CSVFileReader.readInterpret(~dir ++ "faces_5Dprojection.txt").postcs;
+
+("loaded " ++ ~indicesFile).postln;
+
+if (File.exists(~dir ++ ~jiMembershipFile), {
+	var d = File.readAllString(~dir ++ ~jiMembershipFile).parseJSON;
 	~freqRatioScalar = d["freqRatioScalar"].asFloat;
 	~diamondNodes    = d["diamondNodes"].collect { |pt| pt.collect(_.asFloat) };
 	~eikosanyNodes   = d["eikosanyNodes"].collect { |pt| pt.collect(_.asFloat) };
-	("ji_membership.json loaded: Diamond=" ++ ~diamondNodes.size
-		++ "  Eikosany=" ++ ~eikosanyNodes.size).postln;
+	(~jiMembershipFile ++ " loaded: Diamond=" ++ ~diamondNodes.size
+		++ "  Eikosany=" ++ ~eikosanyNodes.size
+		++ "  freqRatioScalar=" ++ ~freqRatioScalar).postln;
 }, {
 	~freqRatioScalar = 1.0;
 	~diamondNodes    = [];
 	~eikosanyNodes   = [];
-	"ji_membership.json not found — freqRatioScalar = 1.0".postln;
+	(~jiMembershipFile ++ " not found — freqRatioScalar = 1.0").postln;
 });
 
 ~lattice_limit = {
@@ -332,8 +344,8 @@ esplicit solution given in the link above -- for this specific case.
 		frq = ~freqScale.value(tile, i) * ~freqRatioScalar;
 		if (~oneOctave, { frq = ~singleOctave.value(frq) }, { frq = ~limitRange.value(frq) });
 		frq = ~baseFreq * frq;
-		// Synth(\triangle, ["freq", frq, "out", i%o.numOutputBusChannels, "amp", sqrt(amps[i]*~ampRef)]);
-		Synth(\pluck, ["freq", frq, "out", i%o.numOutputBusChannels, "amp", sqrt(amps[i]*~ampRef)]);
+		Synth(\triangle, ["freq", frq, "out", i%o.numOutputBusChannels, "amp", sqrt(amps[i]*~ampRef)]);
+		// Synth(\pluck, ["freq", frq, "out", i%o.numOutputBusChannels, "amp", sqrt(amps[i]*~ampRef)]);
 	});
 };
 )

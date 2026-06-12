@@ -1,7 +1,7 @@
 //====================================================================================================
 // Eikosany on the Hexadic Diamond — Sonification
 //
-// Reads Data/eikosany_diamond.json (written by notebooks/eikosany_diamond_coxeter.ipynb).
+// Reads Data/eikosany_diamond.json (written by the export cell at the end of notebooks/pentadic.ipynb).
 // 141 distinct 5D positions from the 20-variant Eikosany overlay on the Hexadic Diamond.
 // Click any point: the nearest one plays as an octave-reduced JI ratio above ~baseFreq.
 //
