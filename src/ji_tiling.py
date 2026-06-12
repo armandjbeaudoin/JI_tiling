@@ -14,6 +14,11 @@ from scipy.spatial import ConvexHull, Delaunay
 #   diamond_ratios = set(Rational(n, d) for n, d in DIAMOND_RATIOS)
 # or:
 #   diamond_float = np.array([n/d for n, d in DIAMOND_RATIOS])
+#
+# NOTE: the 31 entries mirror the 31 Diamond lattice points, but there are only
+# 29 distinct pitch values: (12,9) ≡ (4,3) and (9,6) ≡ (3,2) are the 9 = 3²
+# doubles (9/3 and 3/1 octave-reduce to the same pitch, likewise 3/9 and 1/3).
+# Do not "deduplicate" — the entry count is deliberate.
 # ---------------------------------------------------------------------------
 DIAMOND_RATIOS = [
     (3,2),(16,9),(5,4),(16,11),(7,4),(4,3),(9,8),(8,5),(11,8),(8,7),
@@ -42,7 +47,7 @@ def basis2D(eigenVectors, k, l):
     e1 = e1 / np.linalg.norm(e1)
     e2 = e2 / np.linalg.norm(e2)
 
-    p_rotation = np.arccos(np.dot(e1, e2)) * (5 / np.pi)
+    p_rotation = np.round(np.arccos(np.dot(e1, e2)) * (5 / np.pi), 6)
     print(f'-->5D basis vectors are rotated in 2D plane by ({p_rotation}{pi_unicode})/5')
 
     return p
@@ -84,18 +89,38 @@ def setup_a4_projection():
     return eigenVectors, p, y
 
 
-def make_acceptance_hull(y, s=0.999):
+def make_acceptance_hull(y, s=0.999, centered=False):
     """Build the convex-hull acceptance window for the cut-and-project method.
 
-    Projects the 32 corners of the scaled unit hypercube [0, s]^5 into E⊥ via `y`,
-    then computes the ConvexHull and a Delaunay triangulation for fast point-in-hull
+    Projects the 32 corners of the scaled unit hypercube into E⊥ via `y`, then
+    computes the ConvexHull and a Delaunay triangulation for fast point-in-hull
     queries.
+
+    Window geometry (terminology per Senechal, "Quasicrystals and Geometry"):
+      centered=False — window = π⊥ of the Delaunay (Delone) cell [0, s]^5 of Z^5
+                       (unit cube with corners on lattice points); with a generic
+                       ("regular") shift vector this gives the usual Penrose tiling.
+      centered=True  — window = π⊥ of the (half-open) Voronoi cell, the same cube
+                       shifted by -0.5 per coordinate to center on zero; with zero
+                       shift vector this gives the singular tenfold-symmetric
+                       ("defective") tiling. Equivalent to centered=False with
+                       +0.5*(1,...,1) added to the lattice points; a -0.5 shift
+                       yields the same tiling with 5D representatives translated
+                       by the full trace vector (1,1,1,1,1) — which changes the
+                       JI ratio attached to each vertex.
+
+    NOTE: the returned scipy.spatial.Delaunay object is a triangulation used only
+    for fast point-location queries; that usage of "Delaunay" is unrelated to the
+    lattice's Delaunay cell above.
 
     Parameters
     ----------
     y : (3, 5) array — projection matrix into E⊥ (e.g. from setup_a4_projection)
     s : float        — scale factor for the unit cell (default 0.999 gives a
-                       half-open acceptance window)
+                       half-open window: closed at the anchor faces, open at the
+                       far faces)
+    centered : bool  — Voronoi-cell window (True) vs Delaunay-cell window (False);
+                       see above.
 
     Returns
     -------
@@ -107,6 +132,8 @@ def make_acceptance_hull(y, s=0.999):
         for i5 in range(2) for i4 in range(2) for i3 in range(2)
         for i2 in range(2) for i1 in range(2)
     ], dtype=float) * s
+    if centered:
+        cell -= 0.5
     convexHullSeed = (y @ cell.T).T
     hull     = ConvexHull(convexHullSeed)
     hull_del = Delaunay(convexHullSeed[hull.vertices])
